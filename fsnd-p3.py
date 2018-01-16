@@ -20,6 +20,7 @@ def connect(database_name):
 
 
 def execute_query(query):
+    """Connect to a database, runs a query and returns downloaded query results"""
     # connect to database, grab cursor
     db, cur = connect(DBNAME)
 
@@ -30,6 +31,7 @@ def execute_query(query):
 
 
 def print_top_articles():
+    """Function to get the 3 most popular articles of all time"""
     qry_articles = """
        SELECT a.title, count(*) as views
        FROM articles as a
@@ -46,6 +48,7 @@ def print_top_articles():
 
 
 def print_top_authors():
+    """Function to get the most popular authors"""
     qry_authors = """
        SELECT a.name, count(*) as views
        FROM authors as a
@@ -63,6 +66,7 @@ def print_top_authors():
 
 
 def print_log_error_days():
+    """Function to get days with more than 1% error"""
     qry_logs = """
        SELECT date, perc::numeric(2, 1)
        FROM (
@@ -74,7 +78,7 @@ def print_log_error_days():
        ) as error_perc
        where perc > 1;
     """
-    
+
     results = execute_query(qry_logs)
 
     print('\n\nHere are the days where more than \
