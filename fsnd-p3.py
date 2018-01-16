@@ -1,18 +1,33 @@
 #! /usr/bin/env python2
 
 import psycopg2
+import sys
 
 # Database name to connect
 DBNAME = 'news'
 
+def connect(database_name):
+    """Connect to the PostgreSQL database. Returns a database connection."""
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        c = db.cursor()
+        return db, c
+    except psycopg2.Error as e:
+        print("Unable to connect to database")
+        sys.exit(1)
+        raise e
 
-def main():
+def execute_query(query):
+    # connect to database, grab cursor
+    db, cur = connect(DBNAME)
 
-    # Connect to the database
+    cur.execute(query)
+    results = cur.fetchall()
+    db.close()
+    return results
 
-    db = psycopg2.connect(database=DBNAME)
-    cur = db.cursor()
 
+def print_top_articles():
     qry_articles = """
        SELECT a.title, count(*) as views
        FROM articles as a
@@ -20,13 +35,14 @@ def main():
        GROUP BY a.title
        ORDER BY views DESC limit 3;
     """
-    cur.execute(qry_articles)
-    results = cur.fetchall()
+
+    results = execute_query(qry_articles)
 
     print('Here are the 3 most popular articles of all time:\n')
     for text, value in results:
         print("{text} -- {value} views".format(text=text, value=value))
 
+def print_top_authors():
     qry_authors = """
        SELECT a.name, count(*) as views
        FROM authors as a
@@ -35,13 +51,14 @@ def main():
        GROUP BY a.name
        ORDER BY views DESC;
     """
-    cur.execute(qry_authors)
-    results = cur.fetchall()
+
+    results = execute_query(qry_authors)
 
     print('\n\nHere are the most popular authors of all time:\n')
     for text, value in results:
         print("{text} -- {value} views".format(text=text, value=value))
 
+def print_log_error_days():
     qry_logs = """
        SELECT date, perc::numeric(2, 1)
        FROM (
@@ -53,15 +70,18 @@ def main():
        ) as error_perc
        where perc > 1;
     """
-    cur.execute(qry_logs)
-    results = cur.fetchall()
+    
+    results = execute_query(qry_logs)
 
     print('\n\nHere are the days where more than \
     1% of requests lead to errors:\n')
     for text, value in results:
         print("{text} -- {value} % errors".format(text=text, value=value))
 
-    db.close()
+def main():
+    print_top_articles()
+    print_top_authors()
+    print_log_error_days()
 
 if __name__ == '__main__':
     main()
