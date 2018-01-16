@@ -1,4 +1,5 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import psycopg2
 import sys
@@ -20,7 +21,9 @@ def connect(database_name):
 
 
 def execute_query(query):
-    """Connect to a database, runs a query and returns downloaded query results"""
+    """Connect to a database, runs a query
+    and returns downloaded query results
+    """
     # connect to database, grab cursor
     db, cur = connect(DBNAME)
 
@@ -88,6 +91,9 @@ def print_log_error_days():
 
 
 def main():
+    """Main Function. Calls out 3 print functions to
+    answer the questions proposed in the project.
+    """
     print_top_articles()
     print_top_authors()
     print_log_error_days()
