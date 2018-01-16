@@ -10,7 +10,7 @@ def main():
 
     # Connect to the database
 
-    db = psycopg2.connect(database = DBNAME)
+    db = psycopg2.connect(database=DBNAME)
     cur = db.cursor()
 
     qry_articles = """
@@ -27,7 +27,6 @@ def main():
     for text, value in results:
         print("{text} -- {value} views".format(text=text, value=value))
 
-
     qry_authors = """
        SELECT a.name, count(*) as views
        FROM authors as a
@@ -43,12 +42,12 @@ def main():
     for text, value in results:
         print("{text} -- {value} views".format(text=text, value=value))
 
-
     qry_logs = """
        SELECT date, perc::numeric(2, 1)
        FROM (
            SELECT time::date as date,
-           sum(case when status != '200 OK' then 1 else 0 end) / count(*)::float * 100 as perc
+           sum(case when status != '200 OK' then 1 else 0 end) / 
+           count(*)::float * 100 as perc
            FROM log
            GROUP BY date
        ) as error_perc
@@ -57,16 +56,12 @@ def main():
     cur.execute(qry_logs)
     results = cur.fetchall()
 
-    print('\n\nHere are the days where more than 1% of requests lead to errors:\n')
+    print('\n\nHere are the days where more than \
+    1% of requests lead to errors:\n')
     for text, value in results:
         print("{text} -- {value} % errors".format(text=text, value=value))
 
-
-
     db.close()
-
-
-
 
 if __name__ == '__main__':
     main()
