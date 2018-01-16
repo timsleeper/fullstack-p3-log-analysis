@@ -6,6 +6,7 @@ import sys
 # Database name to connect
 DBNAME = 'news'
 
+
 def connect(database_name):
     """Connect to the PostgreSQL database. Returns a database connection."""
     try:
@@ -16,6 +17,7 @@ def connect(database_name):
         print("Unable to connect to database")
         sys.exit(1)
         raise e
+
 
 def execute_query(query):
     # connect to database, grab cursor
@@ -42,6 +44,7 @@ def print_top_articles():
     for text, value in results:
         print("{text} -- {value} views".format(text=text, value=value))
 
+
 def print_top_authors():
     qry_authors = """
        SELECT a.name, count(*) as views
@@ -58,12 +61,13 @@ def print_top_authors():
     for text, value in results:
         print("{text} -- {value} views".format(text=text, value=value))
 
+
 def print_log_error_days():
     qry_logs = """
        SELECT date, perc::numeric(2, 1)
        FROM (
            SELECT time::date as date,
-           sum(case when status != '200 OK' then 1 else 0 end) / 
+           sum(case when status != '200 OK' then 1 else 0 end) /
            count(*)::float * 100 as perc
            FROM log
            GROUP BY date
@@ -78,10 +82,12 @@ def print_log_error_days():
     for text, value in results:
         print("{text} -- {value} % errors".format(text=text, value=value))
 
+
 def main():
     print_top_articles()
     print_top_authors()
     print_log_error_days()
+
 
 if __name__ == '__main__':
     main()
